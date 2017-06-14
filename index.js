@@ -22,7 +22,7 @@ app.error = function( exception, request, response ) {
 
 app.intent('sayNumber',
 	{
-		"slots":{"number":"AMAZON.NUMBER"}
+		"slots":{"firstname":"string"}
 		,"utterances":[ 
 			"say the number {1-100|number}",
 			"give me the number {1-100|number}",
@@ -47,7 +47,7 @@ app.intent('sayNumber',
 		
     }
 );
-app.intent('todaysLead',
+app.intent('LeadIntent',
 	{
 		
 		"utterances":[ 
@@ -65,12 +65,11 @@ app.intent('todaysLead',
 				timeout:5000
 			});
 			var leadList = JSON.parse(res.getBody());
-			var str = 'Found ' + leadList.length + ' Leads.\n';
+			var str = 'Found ' + leadList.length + ' Leads.\n \n';
 			for(var i = 0; i < leadList.length; i++) {
 				var index = i + 1;
-				str += index + '. ' + leadList[i].FirstName + ' ' + leadList[i].LastName + ' with status ' + leadList[i].Status ;
-				if(i < leadList.length -1) str += ', ';
-				else str += '.';
+				str += index + '. ' + leadList[i].FirstName + ' ' + leadList[i].LastName + ' with status ' + leadList[i].Status + '\n\n';
+				
 			}
 			console.log(str);
 			response.say(str);
@@ -80,6 +79,54 @@ app.intent('todaysLead',
       	return true;
 
     }
+);
+app.intent('ChangeStatusIntent',
+	{
+		
+		"utterances":[ 
+			"change status for lead",
+			"change status"
+		]
+	},
+	function(request, response) {
+		var prompt = 'Ok.';
+		var reprompt = 'Tell me the firstname, lastname and new status of lead.';
+		response.say(prompt).reprompt(reprompt).shouldEndSession(false);
+      	return true;
+    }
+);
+
+app.intent('ChangeLeadIntent',
+	{	"slots":{
+			"firstname":"string",
+			"lastname":"string",
+			"status" :"string"
+		}
+		,"utterances":[
+			"{firstname} {lastname} to {status}"
+		]
+	},
+	function(request,response){
+		try{
+			var firstname = request.slot('firstname');
+			var lastname = request.slot('lastname');
+			var status = request.slot('status');
+			var request = require('sync-request');
+			var res = request('GET', ENDPOINT + '?fName='+firstname+'&lName='+lastname+'&status='+status,{
+				timeout:5000
+			});
+			var leadList = JSON.parse(res.getBody());
+			var str = 'No lead found with name ' + firstname + ' ' + lastname;
+			if(leadList.length != 0)
+				str = 'Status is successfully change.';
+			
+			console.log(str);
+			response.say(str);
+		}catch(e){
+			response.say('Sorry, Some error occured ');
+		}
+      	return true;	
+	}
 );
 
 module.exports = app;
