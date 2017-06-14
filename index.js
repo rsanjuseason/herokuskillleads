@@ -89,10 +89,10 @@ app.intent('ChangeStatusIntent',
 		]
 	},
 	function(request, response) {
-		var prompt = 'Ok.';
-		var reprompt = 'Tell me the firstname, lastname and new status of lead.';
-		response.say(prompt).reprompt(reprompt).shouldEndSession(false);
-      	return true;
+		var prompt = 'Ok.Tell me the firstname, lastname and new status of lead.';
+		//var reprompt = 'Tell me the firstname, lastname and new status of lead.';
+		response.say(prompt).shouldEndSession(false);
+      	//return true;
     }
 );
 
