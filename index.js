@@ -65,7 +65,7 @@ app.intent('todaysLead',
 				timeout:5000
 			});
 			var leadList = JSON.parse(res.getBody());
-			var str = 'Found Lead: ';
+			var str = 'Found ' + leadList.length + ' Leads.\n';
 			for(var i = 0; i < leadList.length; i++) {
 				var index = i + 1;
 				str += index + '. ' + leadList[i].FirstName + ' ' + leadList[i].LastName + ' with status ' + leadList[i].Status ;
