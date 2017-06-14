@@ -89,17 +89,16 @@ app.intent('ChangeStatusIntent',
 		]
 	},
 	function(request, response) {
-		var prompt = 'Ok.Tell me the firstname, lastname and new status of lead.';
+		var prompt = 'Ok,Tell me the firstname, lastname and new status of lead.';
 		//var reprompt = 'Tell me the firstname, lastname and new status of lead.';
 		response.say(prompt).shouldEndSession(false);
-      	//return true;
+      	return true;
     }
 );
 
 app.intent('ChangeLeadIntent',
 	{	"slots":{
-			"firstname":"string",
-			"lastname":"string",
+			"Name":"string",
 			"status" :"string"
 		}
 		,"utterances":[
@@ -108,15 +107,15 @@ app.intent('ChangeLeadIntent',
 	},
 	function(request,response){
 		try{
-			var firstname = request.slot('firstname');
-			var lastname = request.slot('lastname');
+			var name = request.slot('Name');
+			var names = name.split(' ');
 			var status = request.slot('status');
 			var request = require('sync-request');
-			var res = request('GET', ENDPOINT + '?fName='+firstname+'&lName='+lastname+'&status='+status,{
+			var res = request('GET', ENDPOINT + '?fName='+names[0]+'&lName='+names[1]+'&status='+status,{
 				timeout:5000
 			});
 			var leadList = JSON.parse(res.getBody());
-			var str = 'No lead found with name ' + firstname + ' ' + lastname;
+			var str = 'No lead found with name ' + name ;
 			if(leadList.length != 0)
 				str = 'Status is successfully change.';
 			
