@@ -87,7 +87,7 @@ app.intent('ChangeStatusIntent',
 			"change status for lead",
 			"change status"
 		]
-	},
+	},	
 	function(request, response) {
 		var prompt = 'Ok,Tell me the firstname, lastname and new status of lead.';
 		//var reprompt = 'Tell me the firstname, lastname and new status of lead.';
@@ -102,7 +102,8 @@ app.intent('ChangeLeadIntent',
 			"status" :"string"
 		}
 		,"utterances":[
-			"{firstname} {lastname} to {status}"
+			"{Name} to {status}",
+			"{Name} {status}"
 		]
 	},
 	function(request,response){
