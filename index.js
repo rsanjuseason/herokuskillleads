@@ -65,7 +65,11 @@ app.intent('LeadIntent',
 				timeout:5000
 			});
 			var leadList = JSON.parse(res.getBody());
-			var str = 'Found ' + leadList.length + ' Leads.\n \n';
+			var str = 'Found ' + leadList.length + ' Leads.\n \n';	
+			if(leadList.length == 0) {
+				str = 'No leads found for today.';
+			}
+			
 			for(var i = 0; i < leadList.length; i++) {
 				var index = i + 1;
 				str += index + '. ' + leadList[i].FirstName + ' ' + leadList[i].LastName + ' with status ' + leadList[i].Status + '\n\n';
@@ -80,21 +84,44 @@ app.intent('LeadIntent',
 
     }
 );
-app.intent('ChangeStatusIntent',
+app.intent('LeadIntent',
 	{
 		
 		"utterances":[ 
-			"change status for lead",
-			"change status"
+			"get my today's leads",
+			"get my leads",
+			"my leads",
+			"leads"
 		]
-	},	
+	},
 	function(request, response) {
-		var prompt = 'Ok,Tell me the firstname, lastname and new status of lead.';
-		//var reprompt = 'Tell me the firstname, lastname and new status of lead.';
-		response.say(prompt).shouldEndSession(false);
+	
+		try{
+			var request = require('sync-request');
+			var res = request('GET', ENDPOINT,{
+				timeout:5000
+			});
+			var leadList = JSON.parse(res.getBody());
+			var str = 'Found ' + leadList.length + ' Leads.\n \n';	
+			if(leadList.length == 0) {
+				str = 'No leads found for today.';
+			}
+			
+			for(var i = 0; i < leadList.length; i++) {
+				var index = i + 1;
+				str += index + '. ' + leadList[i].FirstName + ' ' + leadList[i].LastName + ' with status ' + leadList[i].Status + '\n\n';
+				
+			}
+			console.log(str);
+			response.say(str);
+		}catch(e){
+			response.say('Sorry, Some error occured ');
+		}
       	return true;
+
     }
 );
+
 
 app.intent('ChangeLeadIntent',
 	{	"slots":{
