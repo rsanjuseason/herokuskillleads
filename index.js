@@ -5,6 +5,7 @@ var alexa = require( 'alexa-app' );
 var _ = require('lodash');
 
 var ENDPOINT ='https://season-developer-edition.ap2.force.com/services/apexrest/FindLeads';
+var LEADCREATEENDPOINT ='https://season-developer-edition.ap2.force.com/services/apexrest/CreateLeads';
 
 var app = new alexa.app( 'skill' );
 
@@ -84,6 +85,56 @@ app.intent('LeadIntent',
 
     }
 );
+app.intent('CreateIntent',
+	{
+		
+		"utterances":[ 
+			"create new lead",
+			"new lead",
+			"create lead"
+		]
+	},	
+	function(request, response) {
+		var prompt = 'Ok,Tell me the firstname, lastname and company name.';
+		//var reprompt = 'Tell me the firstname, lastname and new status of lead.';
+		response.say(prompt).shouldEndSession(false);
+      	return true;
+    }
+);
+
+app.intent('CreateLeadIntent',
+	{	"slots":{
+			"Name":"string",
+			"company" :"string"
+		}
+		,"utterances":[
+			"{Name} company {company}",
+			"{Name} of company {company}"
+		]
+	},
+	function(request,response){
+		try{
+			var name = request.slot('Name');
+			var names = name.split(' ');
+			var company = request.slot('company');
+			var request = require('sync-request');
+			var res = request('GET', LEADCREATEENDPOINT + '?fName='+names[0]+'&lName='+names[1]+'&company='+company,{
+				timeout:5000
+			});
+			var leadList = JSON.parse(res.getBody());
+			var str = 'Sorry,Not created lead for name ' + name ;
+			if(leadList.length != 0)
+				str = 'New lead created with name '+ name + ' of company '+ company;
+			
+			console.log(str);
+			response.say(str);
+		}catch(e){
+			response.say('Sorry, Some error occured ');
+		}
+      	return true;	
+	}
+);
+
 app.intent('ChangeStatusIntent',
 	{
 		
@@ -99,6 +150,7 @@ app.intent('ChangeStatusIntent',
       	return true;
     }
 );
+
 
 app.intent('ChangeLeadIntent',
 	{	"slots":{
